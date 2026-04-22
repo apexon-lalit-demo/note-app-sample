@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; padding: 40px 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 2rem; margin-bottom: 24px; color: #58a6ff; text-align: center; }
+        .add-form { background: #161b22; padding: 20px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #30363d; }
+        .add-form input, .add-form textarea { width: 100%; padding: 10px 14px; border: 1px solid #30363d; border-radius: 8px; background: #0d1117; color: #c9d1d9; font-size: 1rem; margin-bottom: 10px; outline: none; font-family: inherit; }
+        .add-form input:focus, .add-form textarea:focus { border-color: #58a6ff; }
+        .add-form textarea { height: 80px; resize: vertical; }
+        .form-row { display: flex; gap: 10px; align-items: center; }
+        .color-pick { display: flex; gap: 6px; flex: 1; }
+        .color-pick label { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .color-pick label:hover { border-color: #fff; }
+        .color-pick input { display: none; }
+        .color-pick input:checked + span { border: 2px solid #fff; }
+        .color-dot { width: 28px; height: 28px; border-radius: 50%; display: block; }
+        .add-form button { padding: 10px 24px; background: #238636; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+        .add-form button:hover { background: #2ea043; }
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+        .note-card { padding: 16px; border-radius: 10px; position: relative; min-height: 120px; }
+        .note-card h3 { font-size: 1rem; margin-bottom: 8px; color: #000; }
+        .note-card p { font-size: 0.9rem; color: #333; line-height: 1.4; white-space: pre-wrap; }
+        .note-card .date { font-size: 0.7rem; color: #555; margin-top: 12px; }
+        .note-card .del { position: absolute; top: 8px; right: 10px; text-decoration: none; font-size: 1.1rem; opacity: 0.4; }
+        .note-card .del:hover { opacity: 1; }
+        .empty { text-align: center; color: #484f58; padding: 60px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📒 Notes</h1>
+        <form class="add-form" action="/add" method="POST">
+            <input type="text" name="title" placeholder="Note title" required>
+            <textarea name="body" placeholder="Write your note..."></textarea>
+            <div class="form-row">
+                <div class="color-pick">
+                    {% for c in ['#ffd43b','#69db7c','#74c0fc','#e599f7','#ffa8a8','#fff'] %}
+                    <label><input type="radio" name="color" value="{{c}}" {{'checked' if loop.first}}><span class="color-dot" style="background:{{c}}"></span></label>
+                    {% endfor %}
+                </div>
+                <button type="submit">Add Note</button>
+            </div>
+        </form>
+        {% if notes %}
+        <div class="notes-grid">
+            {% for note in notes %}
+            <div class="note-card" style="background:{{ note.color }}">
+                <a href="/delete/{{ note.id }}" class="del">✕</a>
+                <h3>{{ note.title }}</h3>
+                <p>{{ note.body }}</p>
+                <div class="date">{{ note.created_at[:10] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty">No notes yet. Create one above!</p>
+        {% endif %}
+    </div>
+</body>
+</html>
